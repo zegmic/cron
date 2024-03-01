@@ -20,50 +20,50 @@ type Config struct {
 	Command string
 }
 
-func ParseConfig(arg string) (*Config, error) {
+func ParseConfig(arg string) (Config, error) {
 	params := strings.Split(arg, " ")
 	if len(params) != 6 {
-		return nil, FieldsCountInvalid
+		return Config{}, FieldsCountInvalid
 	}
 
 	pattern, err := Parse(strings.Join(params[:5], " "))
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
-	return &Config{
-		Pattern: *pattern,
+	return Config{
+		Pattern: pattern,
 		Command: params[5],
 	}, nil
 }
 
-func Parse(pattern string) (*Pattern, error) {
+func Parse(pattern string) (Pattern, error) {
 	params := strings.Split(pattern, " ")
 	if len(params) != 5 {
-		return nil, PatternFieldsCountInvalid
+		return Pattern{}, PatternFieldsCountInvalid
 	}
 
 	mins, err := convert(params[0], 0, 59)
 	if err != nil {
-		return nil, err
+		return Pattern{}, err
 	}
 	hours, err := convert(params[1], 0, 23)
 	if err != nil {
-		return nil, err
+		return Pattern{}, err
 	}
 	days, err := convert(params[2], 1, 31)
 	if err != nil {
-		return nil, err
+		return Pattern{}, err
 	}
 	months, err := convert(params[3], 1, 12)
 	if err != nil {
-		return nil, err
+		return Pattern{}, err
 	}
 	weekDay, err := convert(params[4], 0, 6)
 	if err != nil {
-		return nil, err
+		return Pattern{}, err
 	}
-	return &Pattern{
+	return Pattern{
 		Minutes: mins,
 		Hours:   hours,
 		Days:    days,
@@ -216,7 +216,7 @@ func removeDups(res []byte) []byte {
 	return unique
 }
 
-func (c *Config) String() string {
+func (c Config) String() string {
 	return fmt.Sprintf("%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n",
 		"minute", toString(c.Pattern.Minutes),
 		"hour", toString(c.Pattern.Hours),

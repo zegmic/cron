@@ -61,7 +61,7 @@ func TestInvalidPatterns(t *testing.T) {
 
 var validPatterns = []struct {
 	pattern  string
-	expected *cron.Pattern
+	expected cron.Pattern
 }{
 	{"1 0 1 1 0", newPattern([]byte{1}, []byte{0}, []byte{1}, []byte{1}, []byte{0})},
 	{"5-10 0 1 1 0", newPattern([]byte{5, 6, 7, 8, 9, 10}, []byte{0}, []byte{1}, []byte{1}, []byte{0})},
@@ -75,8 +75,8 @@ var validPatterns = []struct {
 	{"* * * * *", newPattern(newRange(0, 59), newRange(0, 23), newRange(1, 31), newRange(1, 12), newRange(0, 6))},
 }
 
-func newPattern(mins, hours, days, months, weekDays []byte) *cron.Pattern {
-	return &cron.Pattern{
+func newPattern(mins, hours, days, months, weekDays []byte) cron.Pattern {
+	return cron.Pattern{
 		Minutes: mins,
 		Hours:   hours,
 		Days:    days,
@@ -119,7 +119,7 @@ func TestParseConfig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := &cron.Config{
+	expected := cron.Config{
 		Pattern: cron.Pattern{
 			Minutes: []byte{0, 15, 30, 45},
 			Hours:   []byte{0},
