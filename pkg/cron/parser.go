@@ -6,19 +6,40 @@ import (
 	"strings"
 )
 
-type Config struct {
+type Pattern struct {
 	Minutes []byte
 	Hours   []byte
 	Days    []byte
 	Months  []byte
 	WeekDay []byte
+}
+
+type Config struct {
+	Pattern Pattern
 	Command string
 }
 
-func Parse(pattern string) (*Config, error) {
-	params := strings.Split(pattern, " ")
+func ParseConfig(arg string) (*Config, error) {
+	params := strings.Split(arg, " ")
 	if len(params) != 6 {
 		return nil, FieldsCountInvalid
+	}
+
+	pattern, err := Parse(strings.Join(params[:5], " "))
+	if err != nil {
+		return nil, err
+	}
+
+	return &Config{
+		Pattern: *pattern,
+		Command: params[5],
+	}, nil
+}
+
+func Parse(pattern string) (*Pattern, error) {
+	params := strings.Split(pattern, " ")
+	if len(params) != 5 {
+		return nil, PatternFieldsCountInvalid
 	}
 
 	mins, err := convert(params[0], 0, 59)
@@ -41,13 +62,12 @@ func Parse(pattern string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Config{
+	return &Pattern{
 		Minutes: mins,
 		Hours:   hours,
 		Days:    days,
 		Months:  months,
 		WeekDay: weekDay,
-		Command: params[5],
 	}, nil
 }
 

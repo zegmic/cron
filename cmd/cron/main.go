@@ -10,7 +10,7 @@ func main() {
 	if len(os.Args) != 2 {
 		panic("a single argument is required")
 	}
-	pattern, err := cron.Parse(os.Args[1])
+	pattern, err := cron.ParseConfig(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
