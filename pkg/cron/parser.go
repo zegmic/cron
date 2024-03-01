@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -74,10 +75,10 @@ func Parse(pattern string) (*Pattern, error) {
 func convert(field string, min, max byte) ([]byte, error) {
 	if strings.Contains(field, ",") {
 		return convertList(field, min, max)
-	} else if strings.Contains(field, "-") {
-		return convertRange(field, min, max)
 	} else if strings.Contains(field, "/") {
 		return convertStep(field, min, max)
+	} else if strings.Contains(field, "-") {
+		return convertRange(field, min, max)
 	} else {
 		return convertValue(field, min, max)
 	}
@@ -108,7 +109,7 @@ func convertValue(field string, min, max byte) ([]byte, error) {
 
 func convertStep(field string, min, max byte) ([]byte, error) {
 	stepPattern := strings.Split(field, "/")
-	if len(stepPattern) != 2 {
+	if len(stepPattern) != 2 || stepPattern[0] == "" || stepPattern[1] == "" {
 		return nil, StepPatternIncomplete
 	}
 
@@ -122,6 +123,9 @@ func convertStep(field string, min, max byte) ([]byte, error) {
 		}
 		if val < int(min) {
 			return nil, StepPatternValueTooLow
+		}
+		if val > int(max) {
+			return nil, StepPatternValueTooHigh
 		}
 		start = byte(val)
 	}
@@ -143,8 +147,17 @@ func convertStep(field string, min, max byte) ([]byte, error) {
 	return res, nil
 }
 
+func split(field string) []string {
+	if strings.Count(field, "-") == 2 {
+		parts := strings.Split(field[1:], "-")
+		return []string{"-" + parts[0], parts[1]}
+	}
+	return strings.Split(field, "-")
+
+}
+
 func convertRange(field string, min byte, max byte) ([]byte, error) {
-	minmax := strings.Split(field, "-")
+	minmax := split(field)
 	if minmax[0] == "" {
 		return convertValue(field, min, max)
 	}
@@ -201,4 +214,25 @@ func removeDups(res []byte) []byte {
 	})
 
 	return unique
+}
+
+func (c *Config) String() string {
+	return fmt.Sprintf("%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n%-14s %s\n",
+		"minute", toString(c.Pattern.Minutes),
+		"hour", toString(c.Pattern.Hours),
+		"day of month", toString(c.Pattern.Days),
+		"month", toString(c.Pattern.Months),
+		"day of week", toString(c.Pattern.WeekDay),
+		"command", c.Command,
+	)
+
+}
+
+func toString(s []byte) string {
+	var res string
+	for _, e := range s {
+		res += strconv.Itoa(int(e))
+		res += " "
+	}
+	return res[:len(res)-1]
 }

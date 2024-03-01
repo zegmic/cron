@@ -11,6 +11,7 @@ var (
 	StepPatternIncomplete     = errors.New("part of step missing")
 	StepPatternValueInvalid   = errors.New("value invalid for a step")
 	StepPatternValueTooLow    = errors.New("value for a step lower than minimum")
+	StepPatternValueTooHigh   = errors.New("value for a step higher than maximum")
 	StepValueInvalid          = errors.New("step value incorrect")
 	StepValueOutsideRange     = errors.New("step value outside valid range")
 	RangePatternBoundTooLow   = errors.New("lower bound value lower than minimum")
