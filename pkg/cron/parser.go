@@ -99,7 +99,7 @@ func convertValue(field string, min, max byte) ([]byte, error) {
 	if val < int(min) {
 		return nil, ValueTooLow
 	}
-	if byte(val) > max {
+	if val > int(max) {
 		return nil, ValueTooHigh
 	}
 
@@ -120,7 +120,7 @@ func convertStep(field string, min, max byte) ([]byte, error) {
 		if err != nil {
 			return nil, StepPatternValueInvalid
 		}
-		if byte(val) < min {
+		if val < int(min) {
 			return nil, StepPatternValueTooLow
 		}
 		start = byte(val)
@@ -131,7 +131,7 @@ func convertStep(field string, min, max byte) ([]byte, error) {
 		return nil, StepValueInvalid
 	}
 
-	if step <= 0 || byte(step) > max {
+	if step <= 0 || step > int(max) {
 		return nil, StepValueOutsideRange
 	}
 
@@ -152,7 +152,7 @@ func convertRange(field string, min byte, max byte) ([]byte, error) {
 	if err != nil {
 		return nil, NumericalValueInvalid
 	}
-	if byte(minVal) < min {
+	if minVal < int(min) {
 		return nil, RangePatternBoundTooLow
 	}
 
@@ -160,7 +160,7 @@ func convertRange(field string, min byte, max byte) ([]byte, error) {
 	if err != nil {
 		return nil, NumericalValueInvalid
 	}
-	if byte(maxVal) > max {
+	if maxVal > int(max) {
 		return nil, RangePatternBoundTooHigh
 	}
 
